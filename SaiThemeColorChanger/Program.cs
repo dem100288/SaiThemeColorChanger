@@ -1,6 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Text;
 
 namespace SaiThemeColorChanger
 {
@@ -28,7 +31,7 @@ namespace SaiThemeColorChanger
             if (inputPath.Length == 0)
             {
                 System.Console.Out.WriteLine("Drag the sai2.exe file onto this exe, or just paste its full path into here: ");
-                inputPath = System.Console.ReadLine();
+                inputPath = Path.GetFullPath("sai2.exe");//System.Console.ReadLine();
                 while (!Directory.Exists(Path.GetDirectoryName(inputPath)))
                 {
                     System.Console.Out.WriteLine("Not a valid path: " + inputPath);
@@ -51,14 +54,16 @@ namespace SaiThemeColorChanger
             //Basically this replaces left hex with the right hex.
             //You can swap out the values to get other colors, I haven't noticed any issues using a version with these values modified
             toReplace.Add(new ReplacerHelper("f8f8f8", "9b9b9b")); //Main panel color
-            toReplace.Add(new ReplacerHelper("c0c0c0", "646464")); //Canvas background color
-            toReplace.Add(new ReplacerHelper("e8e8e8", "7f7f7f")); //Scrollbar insides
-            toReplace.Add(new ReplacerHelper("969696", "343434")); //Scrollbars
-            toReplace.Add(new ReplacerHelper("f0f0f0", "7f7f7f")); //Tools background
-            toReplace.Add(new ReplacerHelper("d4d4d4", "7f7f7f")); //Inactive scrollbar arrows
-            toReplace.Add(new ReplacerHelper("676767", "373737")); //Panel borders 2
-            toReplace.Add(new ReplacerHelper("b0b0b0", "646464")); //Active canvas background
-            toReplace.Add(new ReplacerHelper("E0E0E0", "646464")); //Tools panel background
+            //toReplace.Add(new ReplacerHelper("c0c0c0", "646464")); //Canvas background color
+            //toReplace.Add(new ReplacerHelper("e8e8e8", "7f7f7f")); //Scrollbar insides
+            //toReplace.Add(new ReplacerHelper("969696", "343434")); //Scrollbars
+            //toReplace.Add(new ReplacerHelper("f0f0f0", "7f7f7f")); //Tools background
+            //toReplace.Add(new ReplacerHelper("d4d4d4", "7f7f7f")); //Inactive scrollbar arrows
+            //toReplace.Add(new ReplacerHelper("676767", "373737")); //Panel borders 2
+            //toReplace.Add(new ReplacerHelper("b0b0b0", "646464")); //Active canvas background
+            //toReplace.Add(new ReplacerHelper("E0E0E0", "646464")); //Tools panel background
+            //toReplace.Add(new ReplacerHelper("FFFFFF", "191919")); //Tools panel background
+            //toReplace.Add(new ReplacerHelper("000000", "646464")); //Tools panel background
 
             System.Console.Out.WriteLine("Making a backup copy of: " + inputPath);
             makeCopy(inputPath);
@@ -138,7 +143,7 @@ namespace SaiThemeColorChanger
             Directory.CreateDirectory(targetDirectory);
 
             byte[] fileContent = File.ReadAllBytes(targetFile);
-
+            int q = 1;
             foreach (ReplacerHelper replacerHelper in toReplace)
             {
                 byte[] seeker = GetByteArray(replacerHelper.Search);
@@ -147,7 +152,7 @@ namespace SaiThemeColorChanger
                 for (int i = 0; i < fileContent.Length; i++)
                 {
                     if (!findHex(fileContent, i, seeker)) continue;
-
+                    Console.WriteLine(i.ToString() + " " + new StringBuilder().Append(fileContent.Skip(i).Take(23).Select(x => (char)x).ToArray()).ToString());
                     for (int j = 0; j < seeker.Length; j++)
                     {
                         fileContent[i + j] = hider[j];
